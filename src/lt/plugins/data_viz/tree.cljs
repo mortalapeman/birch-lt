@@ -107,7 +107,7 @@
     (assert (branchable? #js []))
     (assert (branchable? (seq "asdf")))
 
-    ;; ->tree ->branches
+    ;; ->tree branches
     (let [map-data {:woot "asdf" :blergs [1 2]}
           vec-data ["asdf" :blergs]
           tree-children (fn [x] (-> x ->tree branches))]
