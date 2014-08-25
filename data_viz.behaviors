@@ -1,10 +1,10 @@
 {:+ {:app [(:lt.objs.plugins/load-js "data_viz_compiled.js")
            (:lt.objs.plugins/load-css "data_viz.css")]
      :aleph.selector [
-                      :lt.plugins.data-viz.alpeh/alpeh.on-select
+                      :lt.plugins.data-viz.aleph/aleph.on-select
                       ]
-     :alpeh-object-viewer [
-                           :lt.plugins.data-viz.alpeh/alpeh-object-viewer.set!
+     :aleph-object-viewer [
+                           :lt.plugins.data-viz.aleph/aleph-object-viewer.set!
                            :lt.objs.tabs/on-destroy-remove
                            ]
      :tree-node [

@@ -1,4 +1,4 @@
-(ns lt.plugins.data-viz.alpeh
+(ns lt.plugins.data-viz.aleph
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
@@ -7,15 +7,15 @@
             [crate.binding :refer [bound subatom]])
   (:require-macros [lt.macros :refer [defui behavior]]))
 
-(behavior ::alpeh-object-viewer.set!
+(behavior ::aleph-object-viewer.set!
           :triggers #{:set!}
           :reaction (fn [this obj]
                       (when-let [old (:object @this)]
                         (object/destroy! old))
                       (object/merge! this {:object (ui/make-tree-node nil (tree/->tree obj))})))
 
-(object/object* ::alpeh-object-viewer
-                :tags #{:alpeh-object-viewer}
+(object/object* ::aleph-object-viewer
+                :tags #{:aleph-object-viewer}
                 :name "LT Object Viewer"
                 :object nil
                 :init (fn [this]
@@ -26,7 +26,7 @@
                                      (object/->content data)
                                      "No Light Table object selected")))]))
 
-(def viewer (object/create ::alpeh-object-viewer))
+(def viewer (object/create ::aleph-object-viewer))
 
 ;;(object/destroy! viewer)
 
@@ -34,7 +34,7 @@
 (defn ltobj? [obj]
   (and obj @obj (map? @obj) (:lt.object/id @obj)) )
 
-(behavior ::alpeh.on-select
+(behavior ::aleph.on-select
           :triggers #{:select}
           :reaction (fn [_ obj]
                       (when (ltobj? (atom obj))
