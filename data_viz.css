@@ -1,0 +1,6 @@
+.tree-node { position: relative; cursor: default; }
+.tree-node .children { margin-left: 18px; }
+.tree-node .display { min-width: 100px; display: inline-block; border: 1px solid transparent; }
+.tree-node .display:hover { border: 1px solid #4D4D4D !important; background-color: #4D4D4D !important; border-radius: 3px; }
+.tree-node .display:hover > * { background-color: #4D4D4D !important; }
+li.tree-node { list-style-type: none; }
