@@ -115,7 +115,7 @@
                         (raise this :close)
                         (raise this :open))))
 
-(defn create-display-node [this k parent node]
+(defn create-display-node! [this k parent node]
   (let [obj (object/create k parent node)]
     (object/merge! obj {:parent-id (object/->id this)})
     obj))
@@ -129,7 +129,7 @@
 (defui display-ui [this parent node]
   (if (display-key? (or parent node) node)
     (do
-      (object/merge! this {::key (create-display-node this ::tree-node-key parent node)})
+      (object/merge! this {::key (create-display-node! this ::tree-node-key parent node)})
       [:span.display (object/->content (::key @this)) " " (object/->content (::value @this))])
     [:span.display (object/->content (::value @this))])
   :click (fn [e]
@@ -142,7 +142,7 @@
                 :open false
                 :children nil
                 :init (fn [this parent node]
-                        (object/merge! this {::value (create-display-node this ::tree-node-value parent node)
+                        (object/merge! this {::value (create-display-node! this ::tree-node-value parent node)
                                              :node node})
                         [:li.tree-node.cm-s-default
                          (display-ui this parent node)]))
