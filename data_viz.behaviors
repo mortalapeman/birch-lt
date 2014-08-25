@@ -6,7 +6,4 @@
                  :lt.plugins.data-viz.ui/tree-node.toggle
                  :lt.plugins.data-viz.ui/tree-node.on-destroy
                  ]
-     :tree-node-value [
-                       ]
-
      }}
