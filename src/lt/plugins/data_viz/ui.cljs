@@ -102,7 +102,7 @@
 (behavior ::tree-node.close
           :triggers #{:close}
           :reaction (fn [this]
-                      (dom/remove (dom/$ :ul.tree-node-children (object/->content this)))
+                      (dom/remove (dom/$ :ul.children (object/->content this)))
                       (doseq [c (:children @this)]
                         (object/destroy! c))
                       (object/merge! this {:open false
@@ -146,6 +146,10 @@
                                              :node node})
                         [:li.tree-node.cm-s-default
                          (display-ui this parent node)]))
+
+(defn make-tree-node [parent node]
+  "Returns a LT tree-node object."
+  (object/create ::tree-node parent node))
 
 
 (comment
