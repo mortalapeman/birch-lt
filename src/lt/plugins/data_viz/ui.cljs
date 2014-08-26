@@ -158,7 +158,11 @@
                          (display-ui this parent node)]))
 
 (defn make-tree-node [parent node]
-  "Returns a LT tree-node object."
+  "Returns a LT tree-node object.
+
+  parent is a object implementiong lt.plugins.data-viz.tree.TreeNode or nil.
+
+  node is a object implementiong lt.plugins.data-viz.tree.TreeNode."
   (object/create ::tree-node parent node))
 
 
