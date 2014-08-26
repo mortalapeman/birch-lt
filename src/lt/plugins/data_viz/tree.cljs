@@ -4,11 +4,10 @@
             [lt.plugins.data-viz.core :refer [type-key]]
             [lt.plugins.data-viz.tree.protocols :as p]))
 
-(def *branchable-type-keys*
-  "Atom containing all known branchable type keys determined by
-  lt.plugins.data-viz.core/type-key. Can be extended at runtime
-  or extended through the branchable? multimethod."
-  (atom #{:map :set :atom :vector :list :seq :jsobject :array}))
+(def ^{:dynamic true} *branchable-type-keys*
+  "Contains all known branchable type keys determined by
+  lt.plugins.data-viz.core/type-key."
+  #{:map :set :atom :vector :list :seq :jsobject :array})
 
 
 (defmulti children
@@ -41,7 +40,7 @@
 (defmethod branchable? :default [v]
   (if (satisfies? p/TreeNodeBranchable v)
     (p/branchable? v)
-    (@*branchable-type-keys* (type-key v))))
+    (*branchable-type-keys* (type-key v))))
 
 
 (defmulti make-node

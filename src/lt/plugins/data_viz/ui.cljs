@@ -13,13 +13,14 @@
     (dom/add-class el klass))
   el)
 
-(def type-key->class (atom {:keyword "cm-atom"
-                            :number "cm-number"
-                            :string "cm-string"
-                            :symbol "cm-symbol"}))
+(def ^{:dynamic true} *type-key->class*
+  {:keyword "cm-atom"
+   :number "cm-number"
+   :string "cm-string"
+   :symbol "cm-symbol"})
 
 (defn type-class [obj]
-  (get @type-key->class (type-key obj)))
+  (get *type-key->class* (type-key obj)))
 
 (defui key-ui [this value]
   [:span.tree-node-key value]

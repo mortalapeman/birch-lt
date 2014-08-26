@@ -22,9 +22,9 @@
       read-string
       atom))
 
-(def *parsers*
-  (atom [{:can-parse? atom-str?
-          :fun read-string-cljs-atom!}]))
+(def ^{:dynamic true} *parsers*
+  [{:can-parse? atom-str?
+    :fun read-string-cljs-atom!}])
 
 (defn find-unreadable-forms [s]
   (loop [state {:capture [] :final [] :#? false :level 0}
@@ -95,7 +95,7 @@
 
 (defn read-string! [s]
   (if-let [{:keys [fun]} (first (filter (comp #(% s) :can-parse?)
-                                        @*parsers*))]
+                                        *parsers*))]
     (fun s)
     (-> (santize-pr-str s)
         read-string)))
