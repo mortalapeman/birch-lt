@@ -1,7 +1,8 @@
 (ns lt.plugins.data-viz.tree
   (:require [goog.object :as gobj]
             [clojure.zip :as zip]
-            [lt.plugins.data-viz.core :refer [type-key]]))
+            [lt.plugins.data-viz.core :refer [type-key]]
+            [lt.plugins.data-viz.tree.protocols :as p]))
 
 (def *branchable-type-keys*
   "Atom containing all known branchable type keys determined by
@@ -21,17 +22,26 @@
   [[::atom @v]])
 
 (defmethod children :jsobject [[k v]]
-  (map vector (gobj/getKeys v) (gobj/getValues v)))
+  ;; Pretty much everything should match :jsobject
+  ;; so check for protocol implementation here.
+  (if (satisfies? p/TreeNodeChildren v)
+    (p/children v)
+    (map vector (gobj/getKeys v) (gobj/getValues v))))
 
 (defmethod children :default [[k v]]
-  (map-indexed vector v))
+  (if (satisfies? p/TreeNodeChildren v)
+    (p/children v)
+    (map-indexed vector v)))
 
 
 (defmulti branchable?
   "Returns true if the given node can have branches."
   type-key)
 
-(defmethod branchable? :default [v] (@*branchable-type-keys* (type-key v)))
+(defmethod branchable? :default [v]
+  (if (satisfies? p/TreeNodeBranchable v)
+    (p/branchable? v)
+    (@*branchable-type-keys* (type-key v))))
 
 
 (defmulti make-node
@@ -47,8 +57,10 @@
       (aset o n d))
     [k o]))
 
-(defmethod make-node :default [[k v] children]
-  [k (into v (map second children))])
+(defmethod make-node :default [[k v :as node] children]
+  (if (satisfies? p/TreeNodeMake v)
+    (p/make-node v k children)
+    [k (into v (map second children))]))
 
 
 (defprotocol TreeNode
