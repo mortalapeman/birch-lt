@@ -13,6 +13,13 @@
     (dom/add-class el klass))
   el)
 
+(defprotocol CssClass
+  "Protocol for extending a type to support syntax
+  highlighting in the tree-node ui."
+  (css-class [this]
+    "Returns a string to be used as the syntax css class
+    for this object type"))
+
 (def ^{:dynamic true} *type-key->class*
   {:keyword "cm-atom"
    :number "cm-number"
@@ -20,7 +27,9 @@
    :symbol "cm-symbol"})
 
 (defn type-class [obj]
-  (get *type-key->class* (type-key obj)))
+  (if (satisfies? CssClass obj)
+    (css-class obj)
+    (get *type-key->class* (type-key obj))))
 
 (defui key-ui [this value]
   [:span.tree-node-key value]
