@@ -55,7 +55,7 @@
   (branches [this] "Returns breadth first sequence of TreeNodes.")
   (unwrap [this] "Returns a vector of the form [key value]."))
 
-(defn ->tree [obj]
+(defn make [obj]
   "Returns a TreeNode structure for traversing the given object."
   (letfn [(reify-zipper [node]
            (reify TreeNode
@@ -107,10 +107,10 @@
     (assert (branchable? #js []))
     (assert (branchable? (seq "asdf")))
 
-    ;; ->tree branches
+    ;; make branches
     (let [map-data {:woot "asdf" :blergs [1 2]}
           vec-data ["asdf" :blergs]
-          tree-children (fn [x] (-> x ->tree branches))]
+          tree-children (fn [x] (-> x make branches))]
       (assert (= ["asdf" [1 2]] (map ->value (tree-children map-data))))
       (assert (= [:woot :blergs] (map ->key (tree-children map-data))))
       (assert (= ["asdf" :blergs] (map ->value (tree-children vec-data))))

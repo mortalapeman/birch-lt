@@ -153,7 +153,7 @@
 
 
 (comment
-  (let [parent (tree/->tree {:asdf [1 2] :foo "bar"})
+  (let [parent (tree/make {:asdf [1 2] :foo "bar"})
         child (first (tree/branches parent))
         key-node (object/create ::tree-node-key parent child)
         value-node (object/create ::tree-node-value parent child)
@@ -170,6 +170,6 @@
     ))
 
 (comment ;; UI testing
-  (def root (tree/->tree {:asdf [1 (atom '(1 2 a b))] :foo "bar" :blergs #js {:fruity 42}}))
+  (def root (tree/make {:asdf [1 (atom '(1 2 a b))] :foo "bar" :blergs #js {:fruity 42}}))
   (def node (object/create ::tree-node nil root)
   (cmd/exec! :playground.set-object node)))
