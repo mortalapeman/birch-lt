@@ -12,7 +12,10 @@
           :reaction (fn [this obj]
                       (when-let [old (:object @this)]
                         (object/destroy! old))
-                      (object/merge! this {:object (ui/make-tree-node nil (tree/make obj))})))
+                      (object/merge! this {:object (ui/make-tree-node nil (tree/make obj))})
+                      (object/raise (:object @this)
+                                    :toggle
+                                    2)))
 
 (behavior ::aleph-object-viewer.close
           :triggers #{:close}
@@ -43,5 +46,5 @@
           :triggers #{:select}
           :reaction (fn [_ obj]
                       (when (ltobj? (atom obj))
-                        (object/raise viewer :set! obj))
+                        (object/raise viewer :set! (object/by-id (:lt.object/id obj))))
                       (tabs/add-or-focus! viewer)))

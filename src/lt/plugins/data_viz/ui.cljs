@@ -100,10 +100,13 @@
 
 (behavior ::tree-node.open
           :triggers #{:open}
-          :reaction (fn [this]
+          :reaction (fn [this & [depth]]
                       (let [node (:node @this)
                             children (->> (tree/branches node)
                                           (map  #(object/create ::tree-node node %)))]
+                        (when (<= 0 (or depth 0))
+                          (doseq [c children]
+                            (raise c :open (dec depth))))
                         (dom/append (object/->content this)
                                     (children-ui children))
                         (object/merge! this {:children children
@@ -120,10 +123,10 @@
 
 (behavior ::tree-node.toggle
           :triggers #{:toggle}
-          :reaction (fn [this]
+          :reaction (fn [this & [depth]]
                       (if (:open @this)
                         (raise this :close)
-                        (raise this :open))))
+                        (raise this :open (or depth 0)))))
 
 (defn create-display-node! [this k parent node]
   (let [obj (object/create k parent node)]
