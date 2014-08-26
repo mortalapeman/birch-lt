@@ -14,6 +14,11 @@
                         (object/destroy! old))
                       (object/merge! this {:object (ui/make-tree-node nil (tree/make obj))})))
 
+(behavior ::aleph-object-viewer.close
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (tabs/rem! this)))
+
 (object/object* ::aleph-object-viewer
                 :tags #{:aleph-object-viewer}
                 :name "LT Object Viewer"
