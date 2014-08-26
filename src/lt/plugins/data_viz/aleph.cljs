@@ -12,7 +12,7 @@
           :reaction (fn [this obj]
                       (when-let [old (:object @this)]
                         (object/destroy! old))
-                      (object/merge! this {:object (ui/make-tree-node nil (tree/->tree obj))})))
+                      (object/merge! this {:object (ui/make-tree-node nil (tree/make obj))})))
 
 (object/object* ::aleph-object-viewer
                 :tags #{:aleph-object-viewer}
