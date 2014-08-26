@@ -54,7 +54,7 @@
   (when-let [n (type-name obj)]
     (-> n (.toLowerCase) keyword)))
 
-(defn dom->string [d]
+(defn dom->str [d]
   "Returns the html representation of the dom node 'd'."
   (let [result (transient [])
         temp (.createElement js/document "div")]
@@ -73,4 +73,4 @@
     (assert (= "String" (type-name "asdf")))
     (assert (= :string (type-key "asdf")))
     (assert (= :seq (type-key (seq "asdf"))))
-    (assert (= "<div><p>1</p></div>" (dom->string (first (lt.util.dom/make "<div><p>1</p></div>")))))))
+    (assert (= "<div><p>1</p></div>" (dom->str (first (lt.util.dom/make "<div><p>1</p></div>")))))))

@@ -3,7 +3,7 @@
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
-            [lt.plugins.data-viz.core :refer [type-key dom->string atom? type-name]]
+            [lt.plugins.data-viz.core :refer [type-key dom->str atom? type-name]]
             [lt.plugins.data-viz.tree :as tree]
             [crate.core :as crate])
   (:require-macros [lt.macros :refer [defui behavior]]))
@@ -157,13 +157,13 @@
         child (first (tree/branches parent))
         key-node (object/create ::tree-node-key parent child)
         value-node (object/create ::tree-node-value parent child)
-        dom->string lt.plugins.data-viz.core/dom->string]
+        dom->str lt.plugins.data-viz.core/dom->str]
 
     (try
       (assert (= "<span class=\"tree-node-value cm-builtin\">Vector</span>"
-                 (dom->string (object/->content value-node))))
+                 (dom->str (object/->content value-node))))
       (assert (= "<span class=\"tree-node-key cm-atom\">:asdf</span>"
-                 (dom->string (object/->content key-node))))
+                 (dom->str (object/->content key-node))))
       (finally
        (object/destroy! key-node)
        (object/destroy! value-node)))
