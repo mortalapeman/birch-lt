@@ -32,7 +32,7 @@
     (get *type-key->class* (type-key obj))))
 
 (defui key-ui [this value]
-  [:span.tree-node-key value]
+  [:span.dv-tree-node.key value]
   :click (fn [e] (raise this :click! e))
   :contextmenu (fn [e] (raise this :menu! e))
   :mouseover (fn [e] (raise this :mouseover! e)))
@@ -70,7 +70,7 @@
 
 
 (defui value-ui [this value]
-  [:span.tree-node-value value]
+  [:span.dv-tree-node.value value]
   :click (fn [e] (raise this :click! e))
   :contextmenu (fn [e] (raise this :menu! e))
   :mouseover (fn [e] (raise this :mouseover! e)))
@@ -154,7 +154,7 @@
                 :init (fn [this parent node]
                         (object/merge! this {::value (create-display-node! this ::tree-node-value parent node)
                                              :node node})
-                        [:li.tree-node.cm-s-default
+                        [:li.dv-tree-node.cm-s-default
                          (display-ui this parent node)]))
 
 (defn make-tree-node [parent node]
