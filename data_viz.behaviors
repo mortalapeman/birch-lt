@@ -5,7 +5,7 @@
                       :lt.plugins.data-viz.aleph/aleph.on-select
                       ]
      :aleph-object-viewer [
-
+                           :lt.plugins.data-viz.ui/tree-node.make
                            :lt.plugins.data-viz.aleph/aleph-object-viewer.set!
                            :lt.plugins.data-viz.aleph/aleph-object-viewer.close
                            ]

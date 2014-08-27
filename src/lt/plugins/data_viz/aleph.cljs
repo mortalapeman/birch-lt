@@ -12,7 +12,8 @@
           :reaction (fn [this obj]
                       (when-let [old (:object @this)]
                         (object/destroy! old))
-                      (object/merge! this {:object (ui/make-tree-node nil (tree/make obj))})
+                      (let [make-tree-node (object/raise-reduce this :make+ ui/make-tree-node)]
+                        (object/merge! this {:object (make-tree-node nil (tree/make obj))}))
                       (object/raise (:object @this)
                                     :toggle
                                     2)))

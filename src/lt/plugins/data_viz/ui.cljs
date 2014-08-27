@@ -104,7 +104,7 @@
                       (let [node (:node @this)
                             children (->> (tree/branches node)
                                           (map  #(object/create ::tree-node node %)))]
-                        (when (<= 0 (or depth 0))
+                        (when (< 1 (or depth 0))
                           (doseq [c children]
                             (raise c :open (dec depth))))
                         (dom/append (object/->content this)
@@ -168,6 +168,12 @@
   node is a object implementiong lt.plugins.data-viz.tree.TreeNode."
   (object/create ::tree-node parent node))
 
+(behavior ::tree-node.make
+          :triggers #{:make+}
+          :desc "Provides a hook to switch out the of the tree-node
+          creation function."
+          :reaction (fn [this other]
+                      make-tree-node))
 
 (comment
   (let [parent (tree/make {:asdf [1 2] :foo "bar"})
