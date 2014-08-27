@@ -1,13 +1,13 @@
 (ns lt.plugins.data-viz.tree
   (:require [goog.object :as gobj]
             [clojure.zip :as zip]
-            [lt.plugins.data-viz.core :refer [type-key]]))
+            [lt.plugins.data-viz.core :refer [type-key]]
+            [lt.plugins.data-viz.tree.protocols :as p]))
 
-(def *branchable-type-keys*
-  "Atom containing all known branchable type keys determined by
-  lt.plugins.data-viz.core/type-key. Can be extended at runtime
-  or extended through the branchable? multimethod."
-  (atom #{:map :set :atom :vector :list :seq :jsobject :array}))
+(def ^{:dynamic true} *branchable-type-keys*
+  "Contains all known branchable type keys determined by
+  lt.plugins.data-viz.core/type-key."
+  #{:map :set :atom :vector :list :seq :jsobject :array})
 
 
 (defmulti children
@@ -21,17 +21,26 @@
   [[::atom @v]])
 
 (defmethod children :jsobject [[k v]]
-  (map vector (gobj/getKeys v) (gobj/getValues v)))
+  ;; Pretty much everything should match :jsobject
+  ;; so check for protocol implementation here.
+  (if (satisfies? p/TreeNodeChildren v)
+    (p/children v)
+    (map vector (gobj/getKeys v) (gobj/getValues v))))
 
 (defmethod children :default [[k v]]
-  (map-indexed vector v))
+  (if (satisfies? p/TreeNodeChildren v)
+    (p/children v)
+    (map-indexed vector v)))
 
 
 (defmulti branchable?
   "Returns true if the given node can have branches."
   type-key)
 
-(defmethod branchable? :default [v] (@*branchable-type-keys* (type-key v)))
+(defmethod branchable? :default [v]
+  (if (satisfies? p/TreeNodeBranchable v)
+    (p/branchable? v)
+    (*branchable-type-keys* (type-key v))))
 
 
 (defmulti make-node
@@ -47,15 +56,17 @@
       (aset o n d))
     [k o]))
 
-(defmethod make-node :default [[k v] children]
-  [k (into v (map second children))])
+(defmethod make-node :default [[k v :as node] children]
+  (if (satisfies? p/TreeNodeMake v)
+    (p/make-node v k children)
+    [k (into v (map second children))]))
 
 
 (defprotocol TreeNode
   (branches [this] "Returns breadth first sequence of TreeNodes.")
   (unwrap [this] "Returns a vector of the form [key value]."))
 
-(defn ->tree [obj]
+(defn make [obj]
   "Returns a TreeNode structure for traversing the given object."
   (letfn [(reify-zipper [node]
            (reify TreeNode
@@ -107,10 +118,10 @@
     (assert (branchable? #js []))
     (assert (branchable? (seq "asdf")))
 
-    ;; ->tree ->branches
+    ;; make branches
     (let [map-data {:woot "asdf" :blergs [1 2]}
           vec-data ["asdf" :blergs]
-          tree-children (fn [x] (-> x ->tree branches))]
+          tree-children (fn [x] (-> x make branches))]
       (assert (= ["asdf" [1 2]] (map ->value (tree-children map-data))))
       (assert (= [:woot :blergs] (map ->key (tree-children map-data))))
       (assert (= ["asdf" :blergs] (map ->value (tree-children vec-data))))

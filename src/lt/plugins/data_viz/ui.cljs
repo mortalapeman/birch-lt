@@ -3,7 +3,7 @@
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
-            [lt.plugins.data-viz.core :refer [type-key dom->string atom? type-name]]
+            [lt.plugins.data-viz.core :refer [type-key dom->str atom? type-name]]
             [lt.plugins.data-viz.tree :as tree]
             [crate.core :as crate])
   (:require-macros [lt.macros :refer [defui behavior]]))
@@ -13,16 +13,26 @@
     (dom/add-class el klass))
   el)
 
-(def type-key->class (atom {:keyword "cm-atom"
-                            :number "cm-number"
-                            :string "cm-string"
-                            :symbol "cm-symbol"}))
+(defprotocol CssClass
+  "Protocol for extending a type to support syntax
+  highlighting in the tree-node ui."
+  (css-class [this]
+    "Returns a string to be used as the syntax css class
+    for this object type"))
+
+(def ^{:dynamic true} *type-key->class*
+  {:keyword "cm-atom"
+   :number "cm-number"
+   :string "cm-string"
+   :symbol "cm-symbol"})
 
 (defn type-class [obj]
-  (get @type-key->class (type-key obj)))
+  (if (satisfies? CssClass obj)
+    (css-class obj)
+    (get *type-key->class* (type-key obj))))
 
 (defui key-ui [this value]
-  [:span.tree-node-key value]
+  [:span.dv-tree-node.key value]
   :click (fn [e] (raise this :click! e))
   :contextmenu (fn [e] (raise this :menu! e))
   :mouseover (fn [e] (raise this :mouseover! e)))
@@ -60,7 +70,7 @@
 
 
 (defui value-ui [this value]
-  [:span.tree-node-value value]
+  [:span.dv-tree-node.value value]
   :click (fn [e] (raise this :click! e))
   :contextmenu (fn [e] (raise this :menu! e))
   :mouseover (fn [e] (raise this :mouseover! e)))
@@ -90,10 +100,13 @@
 
 (behavior ::tree-node.open
           :triggers #{:open}
-          :reaction (fn [this]
+          :reaction (fn [this & [depth]]
                       (let [node (:node @this)
                             children (->> (tree/branches node)
                                           (map  #(object/create ::tree-node node %)))]
+                        (when (< 1 (or depth 0))
+                          (doseq [c children]
+                            (raise c :open (dec depth))))
                         (dom/append (object/->content this)
                                     (children-ui children))
                         (object/merge! this {:children children
@@ -102,7 +115,7 @@
 (behavior ::tree-node.close
           :triggers #{:close}
           :reaction (fn [this]
-                      (dom/remove (dom/$ :ul.tree-node-children (object/->content this)))
+                      (dom/remove (dom/$ :ul.children (object/->content this)))
                       (doseq [c (:children @this)]
                         (object/destroy! c))
                       (object/merge! this {:open false
@@ -110,12 +123,12 @@
 
 (behavior ::tree-node.toggle
           :triggers #{:toggle}
-          :reaction (fn [this]
+          :reaction (fn [this & [depth]]
                       (if (:open @this)
                         (raise this :close)
-                        (raise this :open))))
+                        (raise this :open (or depth 0)))))
 
-(defn create-display-node [this k parent node]
+(defn create-display-node! [this k parent node]
   (let [obj (object/create k parent node)]
     (object/merge! obj {:parent-id (object/->id this)})
     obj))
@@ -129,7 +142,7 @@
 (defui display-ui [this parent node]
   (if (display-key? (or parent node) node)
     (do
-      (object/merge! this {::key (create-display-node this ::tree-node-key parent node)})
+      (object/merge! this {::key (create-display-node! this ::tree-node-key parent node)})
       [:span.display (object/->content (::key @this)) " " (object/->content (::value @this))])
     [:span.display (object/->content (::value @this))])
   :click (fn [e]
@@ -142,30 +155,44 @@
                 :open false
                 :children nil
                 :init (fn [this parent node]
-                        (object/merge! this {::value (create-display-node this ::tree-node-value parent node)
+                        (object/merge! this {::value (create-display-node! this ::tree-node-value parent node)
                                              :node node})
-                        [:li.tree-node.cm-s-default
+                        [:li.dv-tree-node.cm-s-default
                          (display-ui this parent node)]))
 
+(defn make-tree-node [parent node]
+  "Returns a LT tree-node object.
+
+  parent is a object implementiong lt.plugins.data-viz.tree.TreeNode or nil.
+
+  node is a object implementiong lt.plugins.data-viz.tree.TreeNode."
+  (object/create ::tree-node parent node))
+
+(behavior ::tree-node.make
+          :triggers #{:make+}
+          :desc "Provides a hook to switch out the of the tree-node
+          creation function."
+          :reaction (fn [this other]
+                      make-tree-node))
 
 (comment
-  (let [parent (tree/->tree {:asdf [1 2] :foo "bar"})
+  (let [parent (tree/make {:asdf [1 2] :foo "bar"})
         child (first (tree/branches parent))
         key-node (object/create ::tree-node-key parent child)
         value-node (object/create ::tree-node-value parent child)
-        dom->string lt.plugins.data-viz.core/dom->string]
+        dom->str lt.plugins.data-viz.core/dom->str]
 
     (try
       (assert (= "<span class=\"tree-node-value cm-builtin\">Vector</span>"
-                 (dom->string (object/->content value-node))))
+                 (dom->str (object/->content value-node))))
       (assert (= "<span class=\"tree-node-key cm-atom\">:asdf</span>"
-                 (dom->string (object/->content key-node))))
+                 (dom->str (object/->content key-node))))
       (finally
        (object/destroy! key-node)
        (object/destroy! value-node)))
     ))
 
 (comment ;; UI testing
-  (def root (tree/->tree {:asdf [1 (atom '(1 2 a b))] :foo "bar" :blergs #js {:fruity 42}}))
+  (def root (tree/make {:asdf [1 (atom '(1 2 a b))] :foo "bar" :blergs #js {:fruity 42}}))
   (def node (object/create ::tree-node nil root)
   (cmd/exec! :playground.set-object node)))
