@@ -26,6 +26,65 @@
   [{:can-parse? atom-str?
     :fun read-string-cljs-atom!}])
 
+
+(defn process-string [s]
+  (loop [state {:escape-next? false :capture [] :in-string false}
+         c (first s)
+         r (rest s)]
+    (let [is-quote (= "\"" c)
+          is-backslash (= "\\" c)
+          next-c (first r)
+          next-r (rest r)]
+      state
+      (cond
+
+       ;; End of string
+       (nil? c)
+       state
+
+       ;; Not in string and previous character was backslash, blindly skip next character
+       (and (:escape-next? state) (not (:in-string state)))
+       (recur (assoc-in state [:escape-next?] false) next-c next-r)
+
+       ;; Found backslash and not in string
+       (and is-backslash (not (:in-string state)))
+       (recur (assoc-in state [:escape-next?] true) next-c next-r)
+
+       ;; Found quote and not in string, start capture
+       (and is-quote (not (:in-string state)))
+       (recur (-> (assoc-in state [:in-string] true)
+                  (update-in [:capture] conj "\""))
+              next-c next-r)
+
+       ;; Found quote and in string, end capture and return state
+       (and is-quote (:in-string state) (not (:escape-next? state)))
+       (-> (assoc-in state [:in-string] false)
+           (update-in [:capture] conj "\"")
+           (update-in [:capture] (comp vector #(apply str %)))
+           (merge {:next next-c :more next-r}))
+
+       (:in-string state)
+       (recur (update-in state [:capture] conj c) next-c next-r)
+
+       (not (:in-string state))
+       (recur state next-c next-r)
+
+       :else
+       (merge state {:error "We missed a state"
+                     :next c
+                     :more r})
+       ))))
+
+(def asdf "asdf\"woot\"qwer")
+
+(let [capture (comp first :capture process-string)]
+  (assert (= "\"woot\"" (capture "a\"woot\"a")))
+  (assert (= "\"wo\\\"ot\"" (capture "a\"wo\\\"ot\"a"))))
+
+(process-string "a\"wo\\\"ot\"a")
+(read-string "\"wo\\\"ot\"")
+
+
 (defn find-unreadable-forms [s]
   (loop [state {:capture [] :final [] :#? false :level 0}
          c (first (seq s))
@@ -34,6 +93,7 @@
           c-is-hash (= "#" c)
           c-is-start (= "<" c)
           c-is-end (= ">" c)
+          c-is-quote (= "\"" c)
           next-c (first r)
           next-r (rest r)]
       (cond
