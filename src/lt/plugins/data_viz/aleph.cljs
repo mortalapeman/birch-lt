@@ -28,7 +28,7 @@
                 :name "LT Object Viewer"
                 :object nil
                 :init (fn [this]
-                        [:div.tree-node.root
+                        [:div.dv-tree-node.root
                          (bound this
                                 (fn [_]
                                    (if-let [data (:object @this)]
@@ -36,8 +36,6 @@
                                      "No Light Table object selected")))]))
 
 (def viewer (object/create ::aleph-object-viewer))
-
-;;(object/destroy! viewer)
 
 
 (defn ltobj? [obj]
@@ -47,5 +45,5 @@
           :triggers #{:select}
           :reaction (fn [_ obj]
                       (when (ltobj? (atom obj))
-                        (object/raise viewer :set! (object/by-id (:lt.object/id obj))))
-                      (tabs/add-or-focus! viewer)))
+                        (object/raise viewer :set! (object/by-id (:lt.object/id obj)))
+                        (tabs/add-or-focus! viewer))))
