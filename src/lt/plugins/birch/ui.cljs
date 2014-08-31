@@ -1,10 +1,10 @@
-(ns lt.plugins.data-viz.ui
+(ns lt.plugins.birch.ui
   (:require [lt.object :as object :refer [raise raise-reduce]]
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
             [lt.util.dom :as dom]
-            [lt.plugins.data-viz.core :refer [type-key dom->str atom? type-name]]
-            [lt.plugins.data-viz.tree :as tree]
+            [lt.plugins.birch.core :refer [type-key dom->str atom? type-name]]
+            [lt.plugins.birch.tree :as tree]
             [crate.core :as crate])
   (:require-macros [lt.macros :refer [defui behavior]]))
 
@@ -32,7 +32,7 @@
     (get *type-key->class* (type-key obj))))
 
 (defui key-ui [this value]
-  [:span.dv-tree-node.key value]
+  [:span.br-tree-node.key value]
   :click (fn [e] (raise this :click! e))
   :contextmenu (fn [e] (raise this :menu! e))
   :mouseover (fn [e] (raise this :mouseover! e)))
@@ -70,7 +70,7 @@
 
 
 (defui value-ui [this value]
-  [:span.dv-tree-node.value value]
+  [:span.br-tree-node.value value]
   :click (fn [e] (raise this :click! e))
   :contextmenu (fn [e] (raise this :menu! e))
   :mouseover (fn [e] (raise this :mouseover! e)))
@@ -157,15 +157,15 @@
                 :init (fn [this parent node]
                         (object/merge! this {::value (create-display-node! this ::tree-node-value parent node)
                                              :node node})
-                        [:li.dv-tree-node.cm-s-default
+                        [:li.br-tree-node.cm-s-default
                          (display-ui this parent node)]))
 
 (defn make-tree-node [parent node]
   "Returns a LT tree-node object.
 
-  parent is a object implementiong lt.plugins.data-viz.tree.TreeNode or nil.
+  parent is a object implementiong lt.plugins.birch.tree.TreeNode or nil.
 
-  node is a object implementiong lt.plugins.data-viz.tree.TreeNode."
+  node is a object implementiong lt.plugins.birch.tree.TreeNode."
   (object/create ::tree-node parent node))
 
 (behavior ::tree-node.make
@@ -180,7 +180,7 @@
         child (first (tree/branches parent))
         key-node (object/create ::tree-node-key parent child)
         value-node (object/create ::tree-node-value parent child)
-        dom->str lt.plugins.data-viz.core/dom->str]
+        dom->str lt.plugins.birch.core/dom->str]
 
     (try
       (assert (= "<span class=\"tree-node-value cm-builtin\">Vector</span>"

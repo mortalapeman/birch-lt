@@ -1,9 +1,9 @@
-(ns lt.plugins.data-viz.aleph
+(ns lt.plugins.birch.aleph
   (:require [lt.object :as object]
             [lt.objs.tabs :as tabs]
             [lt.objs.command :as cmd]
-            [lt.plugins.data-viz.ui :as ui]
-            [lt.plugins.data-viz.tree :as tree]
+            [lt.plugins.birch.ui :as ui]
+            [lt.plugins.birch.tree :as tree]
             [crate.binding :refer [bound subatom]])
   (:require-macros [lt.macros :refer [defui behavior]]))
 
@@ -28,7 +28,7 @@
                 :name "LT Object Viewer"
                 :object nil
                 :init (fn [this]
-                        [:div.tree-node.root
+                        [:div.br-tree-node.root
                          (bound this
                                 (fn [_]
                                    (if-let [data (:object @this)]
@@ -47,5 +47,5 @@
           :triggers #{:select}
           :reaction (fn [_ obj]
                       (when (ltobj? (atom obj))
-                        (object/raise viewer :set! (object/by-id (:lt.object/id obj))))
-                      (tabs/add-or-focus! viewer)))
+                        (object/raise viewer :set! (object/by-id (:lt.object/id obj)))
+                        (tabs/add-or-focus! viewer))))
