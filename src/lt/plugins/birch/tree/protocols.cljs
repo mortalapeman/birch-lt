@@ -1,4 +1,4 @@
-(ns lt.plugins.data-viz.tree.protocols)
+(ns lt.plugins.birch.tree.protocols)
 
 (defprotocol TreeNodeChildren
   (children [this] "Returns a sequence of [key value] pairs."))

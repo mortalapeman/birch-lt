@@ -1,12 +1,12 @@
-(ns lt.plugins.data-viz.tree
+(ns lt.plugins.birch.tree
   (:require [goog.object :as gobj]
             [clojure.zip :as zip]
-            [lt.plugins.data-viz.core :refer [type-key]]
-            [lt.plugins.data-viz.tree.protocols :as p]))
+            [lt.plugins.birch.core :refer [type-key]]
+            [lt.plugins.birch.tree.protocols :as p]))
 
 (def ^{:dynamic true} *branchable-type-keys*
   "Contains all known branchable type keys determined by
-  lt.plugins.data-viz.core/type-key."
+  lt.plugins.birch.core/type-key."
   #{:map :set :atom :vector :list :seq :jsobject :array})
 
 

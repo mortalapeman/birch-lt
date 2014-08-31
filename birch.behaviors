@@ -1,0 +1,18 @@
+{:+ {:app [(:lt.objs.plugins/load-js "birch_compiled.js")
+           (:lt.objs.plugins/load-css "birch.css")
+           ]
+     :aleph.selector [
+                      :lt.plugins.birch.aleph/aleph.on-select
+                      ]
+     :aleph-object-viewer [
+                           :lt.plugins.birch.ui/tree-node.make
+                           :lt.plugins.birch.aleph/aleph-object-viewer.set!
+                           :lt.plugins.birch.aleph/aleph-object-viewer.close
+                           ]
+     :tree-node [
+                 :lt.plugins.birch.ui/tree-node.open
+                 :lt.plugins.birch.ui/tree-node.close
+                 :lt.plugins.birch.ui/tree-node.toggle
+                 :lt.plugins.birch.ui/tree-node.on-destroy
+                 ]
+     }}

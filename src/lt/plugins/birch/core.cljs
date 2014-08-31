@@ -1,4 +1,4 @@
-(ns lt.plugins.data-viz.core
+(ns lt.plugins.birch.core
   (:require [goog :as goog]))
 
 (defn atom? [obj]

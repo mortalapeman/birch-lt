@@ -1,4 +1,4 @@
-(ns lt.plugins.data-viz.reader
+(ns lt.plugins.birch.reader
   (:require [clojure.string :as string]
             [cljs.reader :refer [read-string]]))
 
