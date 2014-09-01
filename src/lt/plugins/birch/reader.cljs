@@ -1,9 +1,11 @@
-(ns lt.plugins.data-viz.reader
+(ns lt.plugins.birch.reader
   (:require [clojure.string :as string]
             [cljs.reader :refer [read-string]]))
 
 (def atom-re #"^#<Atom: (.+)>$")
 (def other-re #"^#<.+>$")
+
+(declare read-string!)
 
 (defn atom-str? [s]
   (and (string? s)
@@ -19,12 +21,12 @@
 
 (defn read-string-cljs-atom! [s]
   (-> (atom-str-value s)
-      read-string
+      read-string!
       atom))
 
-(def *parsers*
-  (atom [{:can-parse? atom-str?
-          :fun read-string-cljs-atom!}]))
+(def ^{:dynamic true} *parsers*
+  [{:can-parse? atom-str?
+    :fun read-string-cljs-atom!}])
 
 (defn find-unreadable-forms [s]
   (loop [state {:capture [] :final [] :#? false :level 0}
@@ -95,11 +97,16 @@
 
 (defn read-string! [s]
   (if-let [{:keys [fun]} (first (filter (comp #(% s) :can-parse?)
-                                        @*parsers*))]
-    (fun s)
-    (-> (santize-pr-str s)
-        read-string)))
+                                          *parsers*))]
+      (fun s)
+      (-> (santize-pr-str s)
+          read-string)))
 
+(defn try-read-string! [s]
+  (try
+    (read-string! s)
+    (catch js/Error e
+      nil)))
 
 (comment
   (do

@@ -1,0 +1,15 @@
+.br-tree-node { position: relative; cursor: default; }
+.br-tree-node.root { overflow: scroll; }
+.br-tree-node .children { margin-left: 18px; }
+.br-tree-node .display { min-width: 100px; display: inline-block; border: 1px solid transparent; }
+.br-tree-node .display:hover { border: 1px solid #4D4D4D !important; background-color: #4D4D4D !important; border-radius: 3px; }
+.br-tree-node .display:hover > * { background-color: #4D4D4D !important; }
+li.br-tree-node { list-style-type: none; }
+
+/* Copied from default.css due to the lazy loading of editor css */
+.cm-s-default span.cm-string {color: #add}
+.cm-s-default span.cm-keyword {color: #aec; }
+.cm-s-default span.cm-atom { color: #caf; }
+.cm-s-default span.cm-builtin {color: #aec;}
+.cm-s-default span.cm-number {color: #ccc;}
+.cm-s-default span.cm-symbol {color: #ccc;}
