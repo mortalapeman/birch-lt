@@ -12,6 +12,12 @@ An effort has been made to make this plugin extensible by third parties. I have 
  * Aleph integration for viewing internal Light Table objects
  * ClojureScript support for traversing atoms and JS objects.
 
+### Screenshots
+
+![Eval viewer example](http://i.imgur.com/H21A6bA.png)
+
+![Aleph integration example](http://i.imgur.com/iSry94t.png)
+
 ### Eval and Watches
 
 1. Evaluate a Clojure/ClojureScript form that returns some data.
