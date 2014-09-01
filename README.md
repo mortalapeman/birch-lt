@@ -14,7 +14,11 @@ An effort has been made to make this plugin extensible by third parties. I have 
 
 ### Screenshots
 
+Inspecting ClojureScript ASTs in David Nolen's [hello-cljsc](https://github.com/swannodette/hello-cljsc) tutorial.
+
 ![Eval viewer example](http://i.imgur.com/H21A6bA.png)
+
+Introspecting a Light Table editor object at runtime.
 
 ![Aleph integration example](http://i.imgur.com/iSry94t.png)
 
