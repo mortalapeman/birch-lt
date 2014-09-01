@@ -1846,7 +1846,7 @@ break;
 break;
 }
 }),null,null));
-});return iter__7081__auto__.call(null,children);
+});return iter__7081__auto__.call(null,cljs.core.sort_by.call(null,lt.plugins.birch.tree.__GT_key,children));
 })()], null));var seq__8787_8911 = cljs.core.seq.call(null,cljs.core.partition.call(null,2,cljs.core.PersistentVector.EMPTY));var chunk__8788_8912 = null;var count__8789_8913 = 0;var i__8790_8914 = 0;while(true){
 if((i__8790_8914 < count__8789_8913))
 {var vec__8791_8915 = cljs.core._nth.call(null,chunk__8788_8912,i__8790_8914);var ev__7756__auto___8916 = cljs.core.nth.call(null,vec__8791_8915,0,null);var func__7757__auto___8917 = cljs.core.nth.call(null,vec__8791_8915,1,null);lt.util.dom.on.call(null,e__7755__auto__,ev__7756__auto___8916,func__7757__auto___8917);

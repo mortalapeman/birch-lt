@@ -96,7 +96,7 @@
 
 (defui children-ui [children]
   [:ul.children
-   (for [c children]
+   (for [c (sort-by (comp tree/->key :node deref) children)]
      (object/->content c))])
 
 (behavior ::tree-node.open
