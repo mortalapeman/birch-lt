@@ -1,6 +1,5 @@
 {:+ {:app [(:lt.objs.plugins/load-js "birch_compiled.js")
-           (:lt.objs.plugins/load-css "birch.css")
-           ]
+           (:lt.objs.plugins/load-css "birch.css")]
      :aleph.selector [
                       :lt.plugins.birch.aleph/aleph.on-select
                       ]
@@ -9,10 +8,29 @@
                            :lt.plugins.birch.aleph/aleph-object-viewer.set!
                            :lt.plugins.birch.aleph/aleph-object-viewer.close
                            ]
+
+     :birch.simple-viewer [
+                           :lt.plugins.birch.ui/tree-node.make
+                           :lt.plugins.birch.ui/simple-viewer.set!
+                           :lt.plugins.birch.ui/simple-viewer.close
+                           ]
+
+     :inline.result [
+                     :lt.plugins.birch.eval/inline-result.menu+
+                     :lt.plugins.birch.eval/inline-watch.store-last-result
+
+                     ;; Remove when pull request #1616 is accepted into Light Table
+                     :lt.plugins.birch.eval/inline-result.menu-compat+
+                     :lt.objs.menu/menu!
+                     ]
      :tree-node [
                  :lt.plugins.birch.ui/tree-node.open
                  :lt.plugins.birch.ui/tree-node.close
                  :lt.plugins.birch.ui/tree-node.toggle
                  :lt.plugins.birch.ui/tree-node.on-destroy
                  ]
-     }}
+     }
+ :- {:inline.result [
+                     :lt.objs.eval/result-menu!
+                     :lt.objs.eval/result-menu+
+                     ]}}

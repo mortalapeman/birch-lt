@@ -5,6 +5,8 @@
 (def atom-re #"^#<Atom: (.+)>$")
 (def other-re #"^#<.+>$")
 
+(declare read-string!)
+
 (defn atom-str? [s]
   (and (string? s)
        (boolean (re-find atom-re s))))
@@ -19,7 +21,7 @@
 
 (defn read-string-cljs-atom! [s]
   (-> (atom-str-value s)
-      read-string
+      read-string!
       atom))
 
 (def ^{:dynamic true} *parsers*
@@ -95,11 +97,16 @@
 
 (defn read-string! [s]
   (if-let [{:keys [fun]} (first (filter (comp #(% s) :can-parse?)
-                                        *parsers*))]
-    (fun s)
-    (-> (santize-pr-str s)
-        read-string)))
+                                          *parsers*))]
+      (fun s)
+      (-> (santize-pr-str s)
+          read-string)))
 
+(defn try-read-string! [s]
+  (try
+    (read-string! s)
+    (catch js/Error e
+      nil)))
 
 (comment
   (do
