@@ -5,7 +5,8 @@
             [lt.util.dom :as dom]
             [lt.plugins.birch.core :refer [type-key dom->str atom? type-name]]
             [lt.plugins.birch.tree :as tree]
-            [crate.core :as crate])
+            [crate.core :as crate]
+            [crate.binding :refer [bound]])
   (:require-macros [lt.macros :refer [defui behavior]]))
 
 (defn add-class [el klass]
@@ -174,6 +175,41 @@
           creation function."
           :reaction (fn [this other]
                       make-tree-node))
+
+(behavior ::simple-viewer.set!
+          :triggers #{:set!}
+          :reaction (fn [this obj & [depth]]
+                      (when-let [old (:object @this)]
+                        (object/destroy! old))
+                      (let [make-tree-node (object/raise-reduce this :make+ make-tree-node)]
+                        (object/merge! this {:object (make-tree-node nil (tree/make obj))}))
+                      (object/raise (:object @this) :toggle (or depth 1))
+                      (tabs/add-or-focus! this)))
+
+(behavior ::simple-viewer.close
+          :triggers #{:close}
+          :reaction (fn [this]
+                      (tabs/rem! this)))
+
+(object/object* ::birch.simple-viewer
+                :tags #{:birch.simple-viewer}
+                :name "Birch"
+                :object nil
+                :init (fn [this & [name]]
+                        (when name
+                          (object/merge! this {:name name}))
+                        [:div.br-tree-node.root
+                         (bound this
+                                (fn [_]
+                                   (if-let [data (:object @this)]
+                                     (object/->content data)
+                                     "No data to display")))]))
+
+(defn make-simple-viewer
+  ([]
+   (make-simple-viewer "Birch"))
+  ([name]
+   (object/create ::birch.simple-viewer name)))
 
 (comment
   (let [parent (tree/make {:asdf [1 2] :foo "bar"})
